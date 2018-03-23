@@ -1,5 +1,5 @@
-const DOCS_URL = 'winwrap.com/web-editor-docs';
+const DOCS_URL = 'https://winwrap.com/web-editor-docs';
 
-export const transportInterfaceDocLink = `documentation: ${DOCS_URL}#transport-interface`;
+export const transportInterfaceDocLink = `${DOCS_URL}#transport-interface`;
 
-export const editorInterfaceDocLink = `documentation: ${DOCS_URL}#editor-interface`;
+export const editorInterfaceDocLink = `${DOCS_URL}#editor-interface`;

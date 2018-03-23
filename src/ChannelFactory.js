@@ -4,10 +4,17 @@ import {
   editorInterfaceDocLink,
 } from './docs';
 
+const reqProp = (prop, link) => `
+  new ChannelFactory(config) missing required config property '${prop}'.
+  Read the documentation: ${link}
+  - config
+`;
+
 export class ChannelFactory {
-  constructor({ transport = null, editor = null }) {
-    assert(transport, `config.transport required, ${transportInterfaceDocLink}`);
-    assert(editor, `config.editor required, ${editorInterfaceDocLink}`);
+  constructor(config) {
+    const { transport = null, editor = null } = config;
+    assert(transport, reqProp('transport', transportInterfaceDocLink), config);
+    assert(editor, reqProp('editor', editorInterfaceDocLink), config);
     this.transport = transport;
     this.editor = editor;
   }
