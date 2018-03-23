@@ -17,7 +17,10 @@
     "document": true,
     "console": true,
     "navigator": true,
-    "window": true
+    "window": true,
+    "describe": true,
+    "test": true,
+    "expect": true
   },
   "extends": [
     "eslint:recommended",

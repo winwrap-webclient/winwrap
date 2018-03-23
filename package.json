@@ -4,10 +4,12 @@
   "main": "src",
   "dependencies": {
     "autoprefixer": "7.1.6",
+    "babel-cli": "^6.26.0",
     "babel-core": "6.26.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.2",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react-app": "^3.1.1",
     "babel-runtime": "6.26.0",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
@@ -44,8 +46,9 @@
     "whatwg-fetch": "2.0.3"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "pretranspile": "rm -rf lib/",
+    "transpile": "NODE_ENV=production babel src --out-dir lib --source-maps --copy-files",
+    "watch": "NODE_ENV=development babel src --out-dir lib --source-maps --copy-files --watch",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
@@ -84,6 +87,7 @@
   },
   "babel": {
     "presets": [
+      "es2015",
       "react-app"
     ]
   },
