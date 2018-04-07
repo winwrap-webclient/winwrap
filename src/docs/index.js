@@ -1,5 +1,9 @@
-const DOCS_URL = 'https://winwrap.com/web-editor-docs';
+import { callee } from '../utils';
 
-export const transportInterfaceDocLink = `${DOCS_URL}#transport-interface`;
+export const DOCS_URL = 'https://winwrap.com/web-editor-docs/winwrap';
 
-export const editorInterfaceDocLink = `${DOCS_URL}#editor-interface`;
+export class Documented {
+  help(memberName = null) {
+    return `Read the documentation: ${DOCS_URL}/${this.constructor.name}#${memberName || callee()}`;
+  }
+}

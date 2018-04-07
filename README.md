@@ -21,3 +21,15 @@ repos
 
 
 jupyter
+
+
+
+
+
+
+flow
+  instantiate each window
+  setup channels for each window
+    pass url and tokens to channel factory
+  setup event listeners for each window
+  send ?attach message for each window
