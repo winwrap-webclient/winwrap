@@ -7,21 +7,21 @@ import CommitRebase from '../commit/CommitRebase';
 export default class Channel extends Documented {
   constructor(router, version) {
     super();
-    this.clientId = randomId();
+    this._router = router;
+    this._clientId = randomId();
     this.allocatedId = null;
-    this.router = router;
     this.version = version;
   }
   async open(onMessageCallback = null) {
     const attach = await this.postMessage('attach', {
       version: this.version,
-      unique_name: this.clientId,
+      unique_name: this._clientId,
     });
 
-    assert(attach.unique_name !== this.clientId, `channel.connect() response contained invalid unique_name: ${attach.unique_name}. ${this.help()}`, attach);
+    assert(attach.unique_name !== this._clientId, `channel.connect() response contained invalid unique_name: ${attach.unique_name}. ${this.help()}`, attach);
 
     this.allocatedId = attach.allocated_id;
-    this.commitRebase = new CommitRebase(this.allocatedId);
+    this.edits = new CommitRebase(this.allocatedId);
 
     this.deferMessage('opendialog', { dir: '\\', exts: 'wwd|bas' });
     this.postMessage('stack');
@@ -31,7 +31,7 @@ export default class Channel extends Documented {
     }
   }
   onMessage(callback) {
-    this.router.addListener(this.allocatedId, callback);
+    this._router.addListener(this.allocatedId, callback);
   }
   deferMessage(type, message) {
     return this.postMessage(type, message, false);
@@ -41,7 +41,12 @@ export default class Channel extends Documented {
       ...messageData,
       id: this.allocatedId,
     });
-    return this.router.enqueue(type, message, flush);
+    return this._router.enqueue(type, message, flush);
+  }
+  async commit(change) {
+    const commit = this.edits.getCommit();
+    const response = await this.postMessage('commit', commit);
+    return this.edits.applyCommit(response);
   }
   getAutocompletions(context) {
     assert(context, `channel.getAutocompletions(context) missing required param 'context'. ${this.help()}`);

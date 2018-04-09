@@ -24,21 +24,20 @@ export default class Router extends Documented {
       callback,
     ];
   }
-  executeListeners(data, originalMessages) {
+  executeListeners(data) {
     data.forEach(response => {
       const listeners = this.messageListeners[response.id] || [];
       listeners.forEach(callback => callback(response));
-      originalMessages
+      this.messageQueue
         .filter(message => message.matchesResponse(response))
         .forEach(message => message.promise.resolve(response));
     });
   }
   async flushMessages() {
     try {
-      const messages = [...this.messageQueue];
-      const { response: { data } } = await this.transport.post(messages);
+      const { response: { data } } = await this.transport.post(this.messageQueue);
+      this.executeListeners(data);
       this.messageQueue = [];
-      this.executeListeners(data, messages);
       return data;
     } catch (err) {
       // TODO: is this retryable? add retry count to class

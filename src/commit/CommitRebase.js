@@ -1,29 +1,31 @@
 import { isUndefined } from 'lodash';
+import { Documented } from '../docs';
 import Change from './Change';
 import Changes from './Changes';
 import ChangeOp from './ChangeOp';
 import Doc from './Doc';
 
-export default class CommitRebase {
+export default class CommitRebase extends Documented {
   constructor(allocatedChannelId) {
+    super();
     this.allocatedChannelId = allocatedChannelId;
     this.doc = null;
-    channel.AddResponseHandlers({
-      commit: response => {
-        this.CommitDone(response);
-      },
-      rebase: response => {
-        if (!response.visible) {
-          // hidden code is manipulated by this implementation
-          return;
-        }
-        if (this.doc.InCommit(response.target)) {
-          // rebasing self commit - no extra work required
-          return;
-        }
-        this.doc.NeedCommit();
-      },
-    });
+    // channel.AddResponseHandlers({
+    //   commit: response => {
+    //     this.CommitDone(response);
+    //   },
+    //   rebase: response => {
+    //     if (!response.visible) {
+    //       // hidden code is manipulated by this implementation
+    //       return;
+    //     }
+    //     if (this.doc.InCommit(response.target)) {
+    //       // rebasing self commit - no extra work required
+    //       return;
+    //     }
+    //     this.doc.NeedCommit();
+    //   },
+    // });
   }
 
   SetEditor(editor) {
@@ -34,7 +36,7 @@ export default class CommitRebase {
     this.doc.AppendPendingChange(op, caret);
   }
 
-  CommitDone(response) {
+  applyCommit(response) {
     if (response.success) {
       if (response.target === this.Name()) {
         const serverChanges = new Changes();
@@ -43,7 +45,7 @@ export default class CommitRebase {
         });
         this.doc.Rebase(serverChanges);
         this.doc.SetRevision(response.revision);
-        if (isUndefined(response.caret_index)) {
+        if (!isUndefined(response.caret_index)) {
           this.editor_.SetSelection({ first: response.caret_index, last: response.caret_index });
         }
       }
@@ -53,7 +55,7 @@ export default class CommitRebase {
     this.doc.CommitDone();
   }
 
-  GetCommitRequest() {
+  getCommit() {
     let request = null;
     const commit = this.doc === null ? null : this.doc.Commit();
     if (commit !== null) {
@@ -69,7 +71,6 @@ export default class CommitRebase {
         });
       }
       request = {
-        command: '?commit',
         target: this.Name(),
         revision: this.doc.Revision(),
         tab_width: 4,
