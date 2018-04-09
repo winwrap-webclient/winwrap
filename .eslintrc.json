@@ -19,10 +19,12 @@
     "navigator": true,
     "window": true,
     "setTimeout": true,
+    "setImmediate": true,
     "clearTimeout": true,
     "describe": true,
     "test": true,
-    "expect": true
+    "expect": true,
+    "jest": true
   },
   "extends": [
     "eslint:recommended",
@@ -218,7 +220,7 @@
     "no-useless-return": "error",
     "no-var": "off",
     "no-void": "error",
-    "no-warning-comments": "error",
+    "no-warning-comments": "off",
     "no-whitespace-before-property": "error",
     "no-with": "error",
     "nonblock-statement-body-position": "error",

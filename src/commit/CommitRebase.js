@@ -5,8 +5,8 @@ import ChangeOp from './ChangeOp';
 import Doc from './Doc';
 
 export default class CommitRebase {
-  constructor(channel) {
-    this.channel = channel;
+  constructor(allocatedChannelId) {
+    this.allocatedChannelId = allocatedChannelId;
     this.doc = null;
     channel.AddResponseHandlers({
       commit: response => {

@@ -1,5 +1,5 @@
 /**
- * assert that a value is truthy, or throw an error
+ * assert that a value is truthy, else throw an error
  * @param {Any} condition condition to test, any type may be passed
  * @param {String} message custom message
  * @param {Object} objectContext object to pass as context for the error message
@@ -27,3 +27,9 @@ export const callee = () => {
   }
   return fnName.split('.').reverse()[0];
 };
+
+/**
+ * generate random identifier
+ * @return {String} random 10 char string [0-9]
+ */
+ export const randomId = () => new Array(10).fill(null).map(() => Math.floor(Math.random() * 10)).join('');

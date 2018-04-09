@@ -1,6 +1,53 @@
 import { isUndefined } from 'lodash';
+import { Documented } from '../docs';
 
-export default class Remote {
+export default class Router extends Documented {
+  constructor(transport) {
+    super();
+    this.transport = transport;
+    this.messageQueue = [];
+    this.messageListeners = {};
+  }
+  enqueue(cmd, message, flush = false) {
+    this.messageQueue.push(message.extend({
+      datetime: new Date().toLocaleString(),
+      command: `?${cmd}`,
+    }));
+    if (flush) {
+      this.flushMessages();
+    }
+    return message.promise;
+  }
+  addListener(channel, callback) {
+    this.messageListeners[channel] = [
+      ...this.messageListeners[channel] || [],
+      callback,
+    ];
+  }
+  executeListeners(data, originalMessages) {
+    data.forEach(response => {
+      const listeners = this.messageListeners[response.id] || [];
+      listeners.forEach(callback => callback(response));
+      originalMessages
+        .filter(message => message.matchesResponse(response))
+        .forEach(message => message.promise.resolve(response));
+    });
+  }
+  async flushMessages() {
+    try {
+      const messages = [...this.messageQueue];
+      const { response: { data } } = await this.transport.post(messages);
+      this.messageQueue = [];
+      this.executeListeners(data, messages);
+      return data;
+    } catch (err) {
+      // TODO: is this retryable? add retry count to class
+      this.flushMessages();
+    }
+  }
+}
+
+export class OldRouter {
   constructor(basic, name, transport) {
     this.Basic = basic;
     this.Name = name;
